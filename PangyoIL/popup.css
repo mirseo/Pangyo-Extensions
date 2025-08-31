@@ -48,7 +48,7 @@ body {
     content: '';
     width: 55px;
     height: 55px;
-    background: url("static/clean_koreaSelector.svg") no-repeat center center;
+    background: url("static/clean_pangyo.svg") no-repeat center center;
     background-size: contain;
 }
 

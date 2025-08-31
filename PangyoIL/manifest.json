@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "koreaSelector",
+  "name": "pangyotranslator",
   "version": "1.0",
-  "description": "회원가입 창에서 대한민국을 자동으로 찾아주는 확장프로그램입니다!",
+  "description": "판교어를 해독해주고, 변환하는 확장프로그램입니다!!",
   "permissions": [
     "activeTab",
     "storage",
@@ -10,19 +10,19 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "koreaSelector",
+    "default_title": "pangyotranslator",
     "default_icon": {
-      "16": "static/koreaselector.png",
-      "32": "static/koreaselector.png",
-      "48": "static/koreaselector.png",
-      "128": "static/koreaselector.png"
+      "16": "static/pangyotranslator.png",
+      "32": "static/pangyotranslator.png",
+      "48": "static/pangyotranslator.png",
+      "128": "static/pangyotranslator.png"
     }
   },
   "icons": {
-    "16": "static/koreaselector.png",
-    "32": "static/koreaselector.png",
-    "48": "static/koreaselector.png",
-    "128": "static/koreaselector.png"
+    "16": "static/pangyotranslator.png",
+    "32": "static/pangyotranslator.png",
+    "48": "static/pangyotranslator.png",
+    "128": "static/pangyotranslator.png"
   },
   "content_scripts": [
     {

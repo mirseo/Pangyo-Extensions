@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Copyright 링크 클릭 이벤트
     copyrightLink.addEventListener('click', function() {
-        chrome.tabs.create({ url: 'https://github.com/mirseo/WhereIsKorea-Extensions' });
+        chrome.tabs.create({ url: 'https://github.com/mirseo/Pangyo-Extensions' });
     });
 
     function updateStatusText(isEnabled) {
