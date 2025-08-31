@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "koreaSelector",
+  "version": "1.0",
+  "description": "회원가입 창에서 대한민국을 자동으로 찾아주는 확장프로그램입니다!",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "koreaSelector",
+    "default_icon": {
+      "16": "static/koreaselector.png",
+      "32": "static/koreaselector.png",
+      "48": "static/koreaselector.png",
+      "128": "static/koreaselector.png"
+    }
+  },
+  "icons": {
+    "16": "static/koreaselector.png",
+    "32": "static/koreaselector.png",
+    "48": "static/koreaselector.png",
+    "128": "static/koreaselector.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
