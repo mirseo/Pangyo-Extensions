@@ -1,8 +1,8 @@
 body {
     margin: 0;
     padding: 0;
-    width: 280px;
-    height: 320px;
+    width: 300px;
+    height: 420px;
     background: #000000;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
     color: #ffffff;
@@ -158,6 +158,38 @@ input:checked + .slider:before {
 
 .status.disabled {
     color: #666666;
+}
+
+.shortcuts-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.shortcut-key {
+    background: rgba(0, 102, 255, 0.2);
+    color: #0066FF;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+.shortcut-desc {
+    color: #cccccc;
+    font-weight: 500;
 }
 
 .copyright {

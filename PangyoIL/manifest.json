@@ -46,5 +46,11 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["model/*", "lfm2-translator.js"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }

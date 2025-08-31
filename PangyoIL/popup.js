@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const copyrightLink = document.getElementById('copyrightLink');
 
     // 저장된 상태 불러오기
-    chrome.storage.local.get(['koreaSelectorEnabled'], function(result) {
-        const isEnabled = result.koreaSelectorEnabled || false;
+    chrome.storage.local.get(['pangyoTranslatorEnabled'], function(result) {
+        const isEnabled = result.pangyoTranslatorEnabled !== false; // 기본값 true
         toggleSwitch.checked = isEnabled;
         updateStatusText(isEnabled);
     });
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 상태 저장
         chrome.storage.local.set({
-            koreaSelectorEnabled: isEnabled
+            pangyoTranslatorEnabled: isEnabled
         });
 
         // UI 업데이트
@@ -26,8 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             if (tabs[0]) {
                 chrome.tabs.sendMessage(tabs[0].id, {
-                    action: 'toggleAutoSelect',
+                    action: 'toggleTranslator',
                     enabled: isEnabled
+                }, function(response) {
+                    if (chrome.runtime.lastError) {
+                        console.log('탭이 준비되지 않았거나 지원하지 않는 페이지입니다.');
+                    }
                 });
             }
         });

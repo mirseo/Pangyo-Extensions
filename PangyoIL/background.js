@@ -37,22 +37,34 @@ async function handleTranslation(text, mode) {
 // LFM2-350M 모델 번역 함수
 async function translateWithLFM2(text, mode) {
   try {
-    // 모델 파일 로드 확인
-    const modelUrl = chrome.runtime.getURL('model/LFM2-350M.bundle');
-    
-    // 판교어 번역 로직
-    if (mode === 'to-korean') {
-      // 판교어 -> 한국어 번역
-      return await translatePangyoToKorean(text, modelUrl);
-    } else {
-      // 한국어 -> 판교어 번역  
-      return await translateKoreanToPangyo(text, modelUrl);
+    // LFM2 번역 엔진 로드
+    if (!self.lfm2Translator) {
+      // 번역 엔진 스크립트 동적 로드
+      await loadTranslatorEngine();
     }
+    
+    // 번역 실행
+    const translation = await self.lfm2Translator.translate(text, mode);
+    return translation;
   } catch (error) {
     console.error('LFM2 translation error:', error);
-    // 임시 모의 번역 (개발 중)
-    return getMockTranslation(text, mode);
+    // 폴백 번역
+    return getFallbackTranslation(text, mode);
   }
+}
+
+// 번역 엔진 로드
+async function loadTranslatorEngine() {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = chrome.runtime.getURL('lfm2-translator.js');
+    script.onload = () => {
+      console.log('LFM2 번역 엔진이 로드되었습니다.');
+      resolve();
+    };
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
 }
 
 // 판교어 -> 한국어 번역
@@ -117,12 +129,12 @@ async function translateKoreanToPangyo(text, modelUrl) {
   return translatedText;
 }
 
-// 개발용 모의 번역 함수
-function getMockTranslation(text, mode) {
+// 폴백 번역 함수
+function getFallbackTranslation(text, mode) {
   if (mode === 'to-korean') {
-    return `"${text}"를 한국어로 번역한 결과입니다. (LFM2-350M 모델 처리 중...)`;
+    return `"${text}" (판교어→한국어 번역 처리 중...)`;
   } else {
-    return `"${text}"를 판교어로 번역한 결과입니다. (LFM2-350M 모델 처리 중...)`;
+    return `"${text}" (한국어→판교어 번역 처리 중...)`;
   }
 }
 
