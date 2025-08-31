@@ -1,10 +1,10 @@
-# KoreaSelector - Chrome Extensions
-웹 사이트 회원가입, 주소 입력에서 한국을 찾는 것을 자동화해드립니다! :)  
+# PangyoTranslator - Chrome Extensions
+복잡하고 어려운 판교어의 번역을 자동으로 해드립니다! :)  
 주의! ( 아직 개발 중이에요!! )  
 
 🇰🇷 더 이상 긴 국가 목록에서 "Korea"를 찾지 마세요!  
 
-KoreaSelector는 해외 웹사이트 회원가입이나 폼 작성 시 
+PangyoTranslator는 해외 웹사이트 회원가입이나 폼 작성 시 
 다양한 형태로 표기된 대한민국을 자동으로 탐지하고 선택해주는 
 똑똑한 확장프로그램입니다.  
 

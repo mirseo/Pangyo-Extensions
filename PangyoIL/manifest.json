@@ -8,6 +8,20 @@
     "storage",
     "tabs"
   ],
+  "commands": {
+    "translate-to-korean": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K"
+      },
+      "description": "판교어를 한국어로 번역"
+    },
+    "translate-to-pangyo": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L"
+      },
+      "description": "한국어를 판교어로 번역"
+    }
+  },
   "action": {
     "default_popup": "popup.html",
     "default_title": "pangyotranslator",
@@ -23,6 +37,9 @@
     "32": "static/pangyotranslator.png",
     "48": "static/pangyotranslator.png",
     "128": "static/pangyotranslator.png"
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
