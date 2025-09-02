@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PangyoIL LFM2 모델 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-area {
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            min-height: 50px;
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.loading {
+            background: #ffa500;
+            color: white;
+        }
+        .status.success {
+            background: #4CAF50;
+            color: white;
+        }
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 PangyoIL LFM2-350M 모델 테스트</h1>
+        
+        <div class="test-area">
+            <h2>모델 상태</h2>
+            <p>모델 로딩 상태: <span id="modelStatus" class="status loading">확인 중...</span></p>
+            <button onclick="loadModel()">모델 로드</button>
+            <div id="modelInfo" class="result"></div>
+        </div>
+
+        <div class="test-area">
+            <h2>번역 테스트</h2>
+            <label for="inputText">입력 텍스트:</label>
+            <input type="text" id="inputText" placeholder="번역할 텍스트를 입력하세요" value="오늘 런치 타임에 미팅이 있어서 카페인 충전이 필요해">
+            
+            <button onclick="translateToKorean()">판교어 → 한국어</button>
+            <button onclick="translateToPangyo()">한국어 → 판교어</button>
+            
+            <div id="translationResult" class="result"></div>
+        </div>
+
+        <div class="test-area">
+            <h2>일괄 테스트</h2>
+            <button onclick="runBatchTest()">일괄 테스트 실행</button>
+            <div id="batchResult" class="result"></div>
+        </div>
+
+        <div class="test-area">
+            <h2>로그</h2>
+            <div id="logOutput" class="log"></div>
+            <button onclick="clearLog()">로그 지우기</button>
+        </div>
+    </div>
+
+    <script src="lfm2-translator.js"></script>
+    <script>
+        let translator = null;
+
+        function log(message) {
+            const logOutput = document.getElementById('logOutput');
+            const time = new Date().toLocaleTimeString();
+            logOutput.innerHTML += `[${time}] ${message}\n`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+            console.log(message);
+        }
+
+        function updateModelStatus(status, className) {
+            const statusEl = document.getElementById('modelStatus');
+            statusEl.textContent = status;
+            statusEl.className = `status ${className}`;
+        }
+
+        async function loadModel() {
+            try {
+                updateModelStatus('로딩 중...', 'loading');
+                log('모델 로딩 시작...');
+                
+                if (!translator) {
+                    translator = new LFM2PangyoTranslator();
+                }
+                
+                const success = await translator.loadModel();
+                
+                if (success) {
+                    updateModelStatus('로드됨', 'success');
+                    log('모델이 성공적으로 로드되었습니다.');
+                    
+                    // 모델 정보 표시
+                    const modelInfo = document.getElementById('modelInfo');
+                    modelInfo.innerHTML = `
+                        <h3>모델 정보</h3>
+                        <p><strong>모델 경로:</strong> ${translator.modelPath}</p>
+                        <p><strong>데이터 크기:</strong> ${translator.modelData ? (translator.modelData.byteLength / (1024*1024)).toFixed(2) + ' MB' : 'N/A'}</p>
+                        <p><strong>모델 가중치:</strong> ${translator.modelWeights ? '로드됨' : '로드 안됨'}</p>
+                        <p><strong>토크나이저:</strong> ${translator.tokenizer ? '초기화됨' : '초기화 안됨'}</p>
+                    `;
+                } else {
+                    throw new Error('모델 로드 실패');
+                }
+            } catch (error) {
+                updateModelStatus('오류', 'error');
+                log(`모델 로드 실패: ${error.message}`);
+                document.getElementById('modelInfo').innerHTML = `<p style="color: #ffcccb;">오류: ${error.message}</p>`;
+            }
+        }
+
+        async function translateToKorean() {
+            const inputText = document.getElementById('inputText').value.trim();
+            if (!inputText) {
+                alert('번역할 텍스트를 입력하세요.');
+                return;
+            }
+
+            try {
+                log(`판교어 → 한국어 번역 시작: "${inputText}"`);
+                const resultEl = document.getElementById('translationResult');
+                resultEl.innerHTML = '<div class="status loading">번역 중...</div>';
+                
+                if (!translator) {
+                    translator = new LFM2PangyoTranslator();
+                }
+                
+                const result = await translator.translate(inputText, 'to-korean');
+                resultEl.innerHTML = `
+                    <h3>번역 결과 (판교어 → 한국어)</h3>
+                    <p><strong>원문:</strong> ${inputText}</p>
+                    <p><strong>번역:</strong> ${result}</p>
+                `;
+                log(`번역 완료: "${result}"`);
+            } catch (error) {
+                log(`번역 실패: ${error.message}`);
+                document.getElementById('translationResult').innerHTML = `<p style="color: #ffcccb;">번역 오류: ${error.message}</p>`;
+            }
+        }
+
+        async function translateToPangyo() {
+            const inputText = document.getElementById('inputText').value.trim();
+            if (!inputText) {
+                alert('번역할 텍스트를 입력하세요.');
+                return;
+            }
+
+            try {
+                log(`한국어 → 판교어 번역 시작: "${inputText}"`);
+                const resultEl = document.getElementById('translationResult');
+                resultEl.innerHTML = '<div class="status loading">번역 중...</div>';
+                
+                if (!translator) {
+                    translator = new LFM2PangyoTranslator();
+                }
+                
+                const result = await translator.translate(inputText, 'to-pangyo');
+                resultEl.innerHTML = `
+                    <h3>번역 결과 (한국어 → 판교어)</h3>
+                    <p><strong>원문:</strong> ${inputText}</p>
+                    <p><strong>번역:</strong> ${result}</p>
+                `;
+                log(`번역 완료: "${result}"`);
+            } catch (error) {
+                log(`번역 실패: ${error.message}`);
+                document.getElementById('translationResult').innerHTML = `<p style="color: #ffcccb;">번역 오류: ${error.message}</p>`;
+            }
+        }
+
+        async function runBatchTest() {
+            const testCases = [
+                { text: '오늘 런치타임에 미팅이 있어', mode: 'to-korean' },
+                { text: '카페인 충전하고 디벨롭 시작해야겠어', mode: 'to-korean' },
+                { text: '데드라인이 타이트해서 야근해야 할 것 같아', mode: 'to-korean' },
+                { text: '회의가 많아서 점심 시간이 부족해', mode: 'to-pangyo' },
+                { text: '커피 마시고 개발 작업을 시작해야겠어', mode: 'to-pangyo' },
+                { text: '마감일이 촉박해서 야근해야 할 것 같아', mode: 'to-pangyo' }
+            ];
+
+            const resultEl = document.getElementById('batchResult');
+            resultEl.innerHTML = '<div class="status loading">일괄 테스트 실행 중...</div>';
+            
+            let results = '<h3>일괄 테스트 결과</h3>';
+            
+            try {
+                if (!translator) {
+                    translator = new LFM2PangyoTranslator();
+                }
+
+                for (let i = 0; i < testCases.length; i++) {
+                    const testCase = testCases[i];
+                    log(`테스트 ${i+1}/${testCases.length}: "${testCase.text}" (${testCase.mode})`);
+                    
+                    try {
+                        const result = await translator.translate(testCase.text, testCase.mode);
+                        results += `
+                            <div style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">
+                                <strong>테스트 ${i+1}</strong><br>
+                                원문: ${testCase.text}<br>
+                                모드: ${testCase.mode === 'to-korean' ? '판교어→한국어' : '한국어→판교어'}<br>
+                                결과: ${result}
+                            </div>
+                        `;
+                    } catch (error) {
+                        results += `
+                            <div style="margin: 10px 0; padding: 10px; background: rgba(255,0,0,0.2); border-radius: 5px;">
+                                <strong>테스트 ${i+1} 실패</strong><br>
+                                원문: ${testCase.text}<br>
+                                오류: ${error.message}
+                            </div>
+                        `;
+                    }
+                }
+                
+                resultEl.innerHTML = results;
+                log('일괄 테스트 완료');
+            } catch (error) {
+                log(`일괄 테스트 실패: ${error.message}`);
+                resultEl.innerHTML = `<p style="color: #ffcccb;">일괄 테스트 오류: ${error.message}</p>`;
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('logOutput').innerHTML = '';
+        }
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('load', () => {
+            log('페이지 로드 완료. 테스트를 시작하세요.');
+            updateModelStatus('미로드', 'error');
+        });
+    </script>
+</body>
+</html>

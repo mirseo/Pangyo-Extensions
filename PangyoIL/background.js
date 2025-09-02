@@ -19,6 +19,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .then(result => sendResponse(result))
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true; // 비동기 응답을 위해 true 반환
+  } else if (request.action === 'checkModelStatus') {
+    // 모델 상태 확인
+    const modelLoaded = self.lfm2Translator && self.lfm2Translator.modelLoaded;
+    sendResponse({ modelLoaded: modelLoaded });
+    return true;
   }
 });
 
@@ -53,81 +58,28 @@ async function translateWithLFM2(text, mode) {
   }
 }
 
-// 번역 엔진 로드
+// 번역 엔진 로드 (Service Worker 환경에 맞게 수정)
 async function loadTranslatorEngine() {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = chrome.runtime.getURL('lfm2-translator.js');
-    script.onload = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Service Worker에서는 importScripts 사용
+      importScripts(chrome.runtime.getURL('lfm2-translator.js'));
       console.log('LFM2 번역 엔진이 로드되었습니다.');
-      resolve();
-    };
-    script.onerror = reject;
-    document.head.appendChild(script);
+      
+      // 글로벌 번역기 인스턴스 생성
+      if (typeof LFM2PangyoTranslator !== 'undefined') {
+        self.lfm2Translator = new LFM2PangyoTranslator();
+        resolve();
+      } else {
+        reject(new Error('LFM2PangyoTranslator 클래스를 찾을 수 없습니다.'));
+      }
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
-// 판교어 -> 한국어 번역
-async function translatePangyoToKorean(text, modelUrl) {
-  // TODO: 실제 LFM2-350M 모델을 사용한 번역 구현
-  // 현재는 모의 번역을 반환
-  
-  const pangyoWords = {
-    '판교어': '판교 지역 특유의 언어',
-    '출근': '오피스로 가는 것',
-    '퇴근': '집으로 돌아가는 것',
-    '야근': '밤늦게까지 일하는 것',
-    '카페인': '업무 필수 연료',
-    '런치': '점심 시간',
-    '미팅': '회의',
-    '데드라인': '마감일',
-    '워라밸': '일과 삶의 균형'
-  };
-  
-  let translatedText = text;
-  for (const [pangyo, korean] of Object.entries(pangyoWords)) {
-    translatedText = translatedText.replace(new RegExp(pangyo, 'g'), korean);
-  }
-  
-  // 문맥에 따른 추가 번역 로직
-  if (translatedText === text) {
-    // 직접 매칭되는 단어가 없을 경우 문맥 번역
-    translatedText = `${text} (한국어로 번역됨)`;
-  }
-  
-  return translatedText;
-}
-
-// 한국어 -> 판교어 번역
-async function translateKoreanToPangyo(text, modelUrl) {
-  // TODO: 실제 LFM2-350M 모델을 사용한 번역 구현
-  // 현재는 모의 번역을 반환
-  
-  const koreanToPangyo = {
-    '출근하다': '출근하기',
-    '퇴근하다': '퇴근하기', 
-    '일하다': '워킹하기',
-    '회의하다': '미팅하기',
-    '점심 먹다': '런치하기',
-    '커피 마시다': '카페인 충전하기',
-    '야근하다': '야근하기',
-    '마감일': '데드라인',
-    '일과 삶의 균형': '워라밸'
-  };
-  
-  let translatedText = text;
-  for (const [korean, pangyo] of Object.entries(koreanToPangyo)) {
-    translatedText = translatedText.replace(new RegExp(korean, 'g'), pangyo);
-  }
-  
-  // 문맥에 따른 추가 번역 로직
-  if (translatedText === text) {
-    // 직접 매칭되는 단어가 없을 경우 문맥 번역
-    translatedText = `${text} (판교어로 번역됨)`;
-  }
-  
-  return translatedText;
-}
+// 사용하지 않는 함수들 제거 - 이제 lfm2Translator가 모든 번역 처리
 
 // 폴백 번역 함수
 function getFallbackTranslation(text, mode) {

@@ -49,7 +49,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["model/*", "lfm2-translator.js"],
+      "resources": ["model/*", "lfm2-translator.js", "test-model.html"],
       "matches": ["<all_urls>"]
     }
   ]

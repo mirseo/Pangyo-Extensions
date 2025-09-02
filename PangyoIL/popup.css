@@ -160,12 +160,55 @@ input:checked + .slider:before {
     color: #666666;
 }
 
+.model-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px;
+    margin: 15px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.model-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.model-label {
+    color: #cccccc;
+    font-weight: 500;
+}
+
 .shortcuts-info {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 16px;
-    margin: 20px 0;
+    margin: 15px 0;
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.test-section {
+    margin: 15px 0;
+}
+
+.test-btn {
+    background: linear-gradient(135deg, #0066FF 0%, #004DB3 100%);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.test-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
 }
 
 .shortcut-item {
