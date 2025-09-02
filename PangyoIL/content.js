@@ -1,11 +1,17 @@
-// 판교어 번역 확장프로그램 - Content Script
+// 판교어 번역 확장프로그램 - Content Script (고도화)
 let translatorEnabled = true;
 let currentTranslateOverlay = null;
 let selectedText = '';
+let modelReady = false;
 
-// 설정 상태 불러오기
-chrome.storage.local.get(['pangyoTranslatorEnabled'], function(result) {
+// 초기 설정 및 모델 상태 확인
+chrome.storage.local.get(['pangyoTranslatorEnabled', 'modelReadyNotification'], function(result) {
     translatorEnabled = result.pangyoTranslatorEnabled !== false;
+    modelReady = result.modelReadyNotification?.ready || false;
+    
+    if (modelReady) {
+        console.log('판교어 번역기 준비 완료 - 즉시 번역 가능');
+    }
 });
 
 // 메시지 리스너

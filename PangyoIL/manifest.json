@@ -5,9 +5,10 @@
   "description": "판교어를 해독해주고, 변환하는 확장프로그램입니다!!",
   "permissions": [
     "activeTab",
-    "storage",
-    "tabs"
+    "storage"
   ],
+  "host_permissions": [],
+  "optional_permissions": [],
   "commands": {
     "translate-to-korean": {
       "suggested_key": {
@@ -49,7 +50,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["model/*", "lfm2-translator.js", "test-model.html"],
+      "resources": ["model/*", "lfm2-translator.js"],
       "matches": ["<all_urls>"]
     }
   ]
